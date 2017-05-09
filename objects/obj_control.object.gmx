@@ -25,25 +25,52 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>cmdString = ""; //Command String
+            <string>display_set_gui_size(view_wview[0],view_hview[0]);
+cmdString = ""; //Command String
+blinker = 0;
 deleteWait = 4; //Delete character wait time
 deleteWaitMax = 5; //Delete character wait max time
+global.discover = 0;
+global.money = 0; //current money
 global.canWrite = 0; //able to write to console
-global.days = 0; //game days
+global.days = 1; //game days
 global.timeOfDay = 0; // 0: morning, 1: midday, 2: afternoon, 3: night
-global.alive = 0; //people left alive
-global.maxAlive = 0; //people alive at the start
+global.numMovements = 0; // Number of movements until time of day shifts
+global.maxAlive = 60; //people alive at the start
+global.gameStarted = false;
+global.stress = 0;
+global.drunk = 0;
+for(var i = 0; i &lt; 4; i++) {
+    global.familyAlive[i] = true;
+}
+global.murder = false;
+global.alive = global.maxAlive; //people left alive
 global.currentLocation = 1; // odds = inside
 global.currentLocationName = "Home"; //name of current location
 global.dreamChance = 0; //chance of a dream
 global.message = ds_list_create();
 global.messageDelay = 0;
 global.messageDelayQueue = ds_queue_create();
-global.messageMaxSize = 20;
+global.messageMaxSize = 25;
 for(var i = 0; i &lt; global.messageMaxSize; i++) {
     global.messageDetail[i,0] = 0; //typewriter effect counter
     global.messageDetail[i,1] = ""; //typewriter effect string
 }
+gameFont = font_add_sprite(spr_game_font,ord(" "),false,-7);
+sendDelayMessage("@@@@@@@    @@@@@@    @@@@@@   @@@@@@   @@@@@@@@  @@@@@@@   ",45);
+sendDelayMessage("@@@@@@@@  @@@@@@@@  @@@@@@@  @@@@@@@   @@@@@@@@  @@@@@@@@  ",45);
+sendDelayMessage("@@!  @@@  @@!  @@@  !@@      !@@       @@!       @@!  @@@  ",45);
+sendDelayMessage("!@!  @!@  !@!  @!@  !@!      !@!       !@!       !@!  @!@  ",45);
+sendDelayMessage("@!@@!@!   @!@  !@!  !!@@!!   !!@@!!    @!!!:!    @!@  !@!  ",45);
+sendDelayMessage("!!@!!!    !@!  !!!   !!@!!!   !!@!!!   !!!!!:    !@!  !!!  ",45);
+sendDelayMessage("!!:       !!:  !!!       !:!      !:!  !!:       !!:  !!!  ",45);
+sendDelayMessage(":!:       :!:  !:!      !:!      !:!   :!:       :!:  !:!  ",45);
+sendDelayMessage(" ::       ::::: ::  :::: ::  :::: ::    :: ::::   :::: ::  ",45);
+sendDelayMessage(" :         : :  :   :: : :   :: : :    : :: ::   :: :  :   ",45);
+sendDelayMessage("           A game made for AdventureJam 2017",15);
+sendDelayMessage("                    by mackwafang",15);
+repeat(8) sendDelayMessage("",5);
+sendDelayMessage("To start, type [start] and press &lt;enter&gt;",60);
 </string>
           </argument>
         </arguments>
@@ -85,7 +112,9 @@ if(global.canWrite) {
     if(keyboard_check_pressed(vk_anykey)) {
         if(!keyboard_check_pressed(vk_backspace)) {
             if(!keyboard_check_pressed(vk_enter)) {
-                cmdString += string(keyboard_lastchar);
+                if(32 &lt;= keyboard_lastkey &amp;&amp; keyboard_lastkey &lt;= 126) {
+                    cmdString += string(keyboard_lastchar);
+                }
             }
         }
     }
@@ -96,12 +125,12 @@ if(ds_queue_size(global.messageDelayQueue) == 0) {
 }
 else {
     global.canWrite = false;
-    if(global.messageDelay &lt; 75) {
-        global.messageDelay++;
+    if(global.messageDelay &gt; 0) {
+        global.messageDelay--;
     }
     else {
-        global.messageDelay = 0;
         sendMessage(ds_queue_dequeue(global.messageDelayQueue));
+        global.messageDelay = ds_queue_dequeue(global.messageDelayQueue);
     }
 }
 //Perform the action
@@ -145,7 +174,10 @@ xv = view_xview[0];
 yv = view_yview[0];
 vh = view_hport[0];
 vw = view_wport[0];
+draw_set_font(gameFont);
 draw_text_colour(32,vh-32,cmdString,white,white,white,white,1);
+blinker++;
+draw_text_colour(32+string_length(cmdString)*9,vh-32,"|",white,white,white,white,abs(sin(degtorad(blinker*2))));
 for(var i = 0; i &lt; ds_list_size(global.message); i++) {
     draw_text_colour(32,vh-32+((i-ds_list_size(global.message))*16),global.messageDetail[i,1],white,white,white,white,1);
 }
