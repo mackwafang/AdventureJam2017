@@ -10,6 +10,6 @@ switch(time) {
     case 3:
         return "Night";
     default:
-        show_error(string(time)+" is not a valid time",true);
+        show_error(string(time)+" is not a valid time",false);
         break;
 }

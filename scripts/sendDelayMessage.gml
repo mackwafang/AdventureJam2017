@@ -1,4 +1,8 @@
 ///sendDelayMessage(string,delay)
+/*
+    string: string of the message
+    delay: how long until the next message appear
+*/
 var str = argument0;
 var delay = argument1;
 var extraString = "";

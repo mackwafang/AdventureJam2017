@@ -40,6 +40,8 @@
     <script>scripts\autoStringCutLocation.gml</script>
     <script>scripts\autoStringCut.gml</script>
     <script>scripts\assert.gml</script>
+    <script>scripts\getStressLevel.gml</script>
+    <script>scripts\checkInventory.gml</script>
   </scripts>
   <objects name="objects">
     <object>objects\obj_control</object>
