@@ -1,5 +1,5 @@
 ///timeOfDayString()
-var time = global.timeOfDay;
+var time = timeOfDay;
 switch(time) {
     case 0: 
         return "Morning";

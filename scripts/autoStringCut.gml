@@ -1,7 +1,7 @@
 ///autoStringCut(string,length)
 /*
     cut off the string if the string is longer than length
-    return the string after being cut, return the argument otherwise
+    return the string after being cut, return the string that is cut into size length otherwise
 */
 var str = argument0;
 var length = argument1;
@@ -10,4 +10,4 @@ for(var i = length; i >= 1; i--) {
         return string_copy(str,1,i);
     }
 }
-return str;
+return string_copy(str,0,length);

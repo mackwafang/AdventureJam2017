@@ -25,60 +25,68 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>display_set_gui_size(view_wview[0],view_hview[0]);
+            <string>initGame();
+display_set_gui_size(view_wview[0],view_hview[0]);
 cmdString = ""; //Command String
 blinker = 0;
 deleteWait = 4; //Delete character wait time
 deleteWaitMax = 5; //Delete character wait max time
-global.discover = 0;
-global.money = 0; //current money
-global.breakin = false;
-global.canWrite = 0; //able to write to console
-global.days = 1; //game days
-global.timeOfDay = 0; // 0: morning, 1: midday, 2: afternoon, 3: night
-global.numMovements = 0; // Number of movements until time of day shifts
-global.maxAlive = 60; //people alive at the start
-global.gameStarted = false;
-global.stress = 0;
-global.drunk = 0;
+discover = 0;
+money = 0; //current money
+breakin = false;
+isReading = false;
+readingPage = 0;
+canWrite = 0; //able to write to console
+days = 3; //game days
+timeOfDay = 0; // 0: morning, 1: midday, 2: afternoon, 3: night
+numMovements = 0; // Number of movements until time of day shifts
+maxAlive = 60; //people alive at the start
+gameStarted = false;
+playerName = "";
+getName = false;
+stress = 0;
+drunk = 0;
 for(var i = 0; i &lt; 4; i++) {
-    global.familyAlive[i] = true;
+    familyAlive[i] = true;
 }
 for(var i = 0 ; i &lt; 10; i++) {
-    global.event[i] = 0;
-    global.miniEvent[i] = 0;
+    event[i] = 1;
+    miniEvent[i] = 0;
 }
-//global.event[0] = true;
-global.inventory = ds_list_create();
-global.murder = false;
-global.alive = global.maxAlive; //people left alive
-global.currentLocation = 1; // odds = inside
-global.currentLocationName = "Home"; //name of current location
-global.dreamChance = 15; //chance of a dream
-global.message = ds_list_create();
-global.messageDelay = 0;
-global.messageDelayQueue = ds_queue_create();
-global.messageMaxSize = 25;
-for(var i = 0; i &lt; global.messageMaxSize; i++) {
-    global.messageDetail[i,0] = 0; //typewriter effect counter
-    global.messageDetail[i,1] = ""; //typewriter effect string
+inventory = ds_list_create();
+yesNoPrompt = false
+murder = false;
+alive = maxAlive; //people left alive
+currentLocation = 1; // odds = inside
+currentLocationName = "Home"; //name of current location
+dreamChance = 15; //chance of a dream
+message = ds_list_create();
+messageHistory = ds_list_create();
+messageDelay = 0;
+messageDelayQueue = ds_queue_create();
+messageMaxSize = 25;
+gameFont = font_add_sprite(spr_game_font,32,false,-7);
+pigenFont = font_add_sprite_ext(spr_pigen_key,"ABCDEFGHIJKLMNOPQRSTUVWXYZ",false,3);
+for(var i = 0; i &lt; messageMaxSize; i++) {
+    messageDetail[i,0] = 0; //typewriter effect counter
+    messageDetail[i,1] = ""; //typewriter effect string
+    messageDetail[i,2] = gameFont; //typewriter effect string
 }
-gameFont = font_add_sprite(spr_game_font,ord(" "),false,-7);
-sendDelayMessage("@@@@@@@    @@@@@@    @@@@@@   @@@@@@   @@@@@@@@  @@@@@@@   ",5);
-sendDelayMessage("@@@@@@@@  @@@@@@@@  @@@@@@@  @@@@@@@   @@@@@@@@  @@@@@@@@  ",5);
-sendDelayMessage("@@!  @@@  @@!  @@@  !@@      !@@       @@!       @@!  @@@  ",5);
-sendDelayMessage("!@!  @!@  !@!  @!@  !@!      !@!       !@!       !@!  @!@  ",5);
-sendDelayMessage("@!@@!@!   @!@  !@!  !!@@!!   !!@@!!    @!!!:!    @!@  !@!  ",5);
-sendDelayMessage("!!@!!!    !@!  !!!   !!@!!!   !!@!!!   !!!!!:    !@!  !!!  ",5);
-sendDelayMessage("!!:       !!:  !!!       !:!      !:!  !!:       !!:  !!!  ",5);
-sendDelayMessage(":!:       :!:  !:!      !:!      !:!   :!:       :!:  !:!  ",5);
-sendDelayMessage(" ::       ::::: ::  :::: ::  :::: ::    :: ::::   :::: ::  ",5);
-sendDelayMessage(" :         : :  :   :: : :   :: : :    : :: ::   :: :  :   ",5);
-sendDelayMessage("           A game made for AdventureJam 2017",15);
-sendDelayMessage("                    by mackwafang",15);
-sendDelayMessage("                    Story by Nouvi",15);
-repeat(8) sendDelayMessage("",5);
-sendDelayMessage("To start, type [start] and press &lt;enter&gt;",60);
+sendMessage("@@@@@@@    @@@@@@    @@@@@@   @@@@@@   @@@@@@@@  @@@@@@@   ");
+sendMessage("@@@@@@@@  @@@@@@@@  @@@@@@@  @@@@@@@   @@@@@@@@  @@@@@@@@  ");
+sendMessage("@@!  @@@  @@!  @@@  !@@      !@@       @@!       @@!  @@@  ");
+sendMessage("!@!  @!@  !@!  @!@  !@!      !@!       !@!       !@!  @!@  ");
+sendMessage("@!@@!@!   @!@  !@!  !!@@!!   !!@@!!    @!!!:!    @!@  !@!  ");
+sendMessage("!!@!!!    !@!  !!!   !!@!!!   !!@!!!   !!!!!:    !@!  !!!  ");
+sendMessage("!!:       !!:  !!!       !:!      !:!  !!:       !!:  !!!  ");
+sendMessage(":!:       :!:  !:!      !:!      !:!   :!:       :!:  !:!  ");
+sendMessage(" ::       ::::: ::  :::: ::  :::: ::    :: ::::   :::: ::  ");
+sendMessage(" :         : :  :   :: : :   :: : :    : :: ::   :: :  :   ");
+sendMessage("           A game made for AdventureJam 2017");
+sendMessage("                    by mackwafang");
+sendMessage("                    Story by Nouvi");
+repeat(8) sendMessage("");
+sendDelayMessage("To start, type [start] and press &lt;enter&gt;",30);
 </string>
           </argument>
         </arguments>
@@ -116,7 +124,7 @@ else if(keyboard_check_released(vk_backspace)) {
     deleteWait = deleteWaitMax-1;
 }
 //Typing characters
-if(global.canWrite) {
+if(canWrite) {
     if(keyboard_check_pressed(vk_anykey)) {
         if(!keyboard_check_pressed(vk_backspace)) {
             if(!keyboard_check_pressed(vk_enter)) {
@@ -128,17 +136,18 @@ if(global.canWrite) {
     }
 }
 //Delay message
-if(ds_queue_size(global.messageDelayQueue) == 0) {
-    global.canWrite = true;
+if(ds_queue_size(messageDelayQueue) == 0) {
+    canWrite = true;
 }
 else {
-    global.canWrite = false;
-    if(global.messageDelay &gt; 0) {
-        global.messageDelay--;
+    canWrite = false;
+    if(messageDelay &gt; 0) {
+        messageDelay--;
     }
     else {
-        sendMessage(ds_queue_dequeue(global.messageDelayQueue));
-        global.messageDelay = ds_queue_dequeue(global.messageDelayQueue);
+        sendMessage(ds_queue_dequeue(messageDelayQueue));
+        messageDelay = ds_queue_dequeue(messageDelayQueue);
+        messageDetail[ds_list_size(message)-1,2] = ds_queue_dequeue(messageDelayQueue);
     }
 }
 //Perform the action
@@ -148,13 +157,44 @@ if(keyboard_check_pressed(vk_enter)) {
     }
 }
 //Typewriter effect
-for(var i = 0; i &lt; global.messageMaxSize; i++) {
-    var str = ds_list_find_value(global.message,i);
-    if(global.messageDetail[i,0] &lt; string_length(str)) {
-        global.messageDetail[i,0]++;
+for(var i = 0; i &lt; messageMaxSize; i++) {
+    var str = ds_list_find_value(message,i);
+    if(messageDetail[i,0] &lt; string_length(str)) {
+        messageDetail[i,0]++;
     }
-    global.messageDetail[i,1] = string_copy(str,0,global.messageDetail[i,0]);
+    messageDetail[i,1] = string_copy(str,0,messageDetail[i,0]);
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="3">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Print all of game's message
+/*for(var i = 0; i &lt; ds_list_size(message); i++) {
+    print(ds_list_find_value(message,i));
+}*/
+ds_list_destroy(message);
+ds_list_destroy(messageHistory);
+ds_list_destroy(inventory);
+ds_queue_destroy(messageDelayQueue);
+
 </string>
           </argument>
         </arguments>
@@ -182,12 +222,13 @@ xv = view_xview[0];
 yv = view_yview[0];
 vh = view_hport[0];
 vw = view_wport[0];
-draw_set_font(gameFont);
 draw_text_colour(32,vh-32,cmdString,white,white,white,white,1);
 blinker++;
 draw_text_colour(32+string_length(cmdString)*9,vh-32,"|",white,white,white,white,abs(sin(degtorad(blinker*2))));
-for(var i = 0; i &lt; ds_list_size(global.message); i++) {
-    draw_text_colour(32,vh-32+((i-ds_list_size(global.message))*16),global.messageDetail[i,1],white,white,white,white,1);
+for(var i = 0; i &lt; ds_list_size(message); i++) {
+    draw_set_font(messageDetail[i,2]);
+    draw_text_colour(32,vh-32+((i-ds_list_size(message))*16),messageDetail[i,1],white,white,white,white,1);
+    draw_set_font(gameFont);
 }
 </string>
           </argument>

@@ -1,7 +1,7 @@
 ///autoStringCutLocation(string,length)
 /*
     cut off the string if the string is longer than length
-    return the location where it should be cut, return 0 otherwise
+    return the location where it should be cut, return length otherwise if no spaces is found
 */
 var str = argument0;
 var length = argument1;
@@ -10,4 +10,4 @@ for(var i = length; i >= 1; i--) {
         return i;
     }
 }
-return 0;
+return length;
